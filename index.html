@@ -23,7 +23,7 @@
       <a href="TMO Design System.dc.html" style="font-size:13px">← Design system</a>
       <div style="font-size:26px;font-weight:800;line-height:1.15">TMO Rider · Customer</div>
       <div style="font-size:15px;color:#5C6B60;line-height:1.5">Live on the shared TMO system. Everything you do here shows up in the Officer, Driver, Tracking and Admin apps.</div>
-      <div style="background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5"><b>Testing mode</b><span style="color:#5C6B60">Any 6-digit code passes OTP. The real code also arrives as an SMS banner on this device.</span></div>
+      <div style="background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5"><b>Testing mode</b><span style="color:#5C6B60">Sender <b style="color:#17251B">0801 234 5678</b> · Receiver <b style="color:#17251B">0809 876 5432</b> · PIN <b style="color:#17251B">1234</b> · code <b style="color:#17251B">123456</b> · waybill <b style="color:#17251B">TMO-0001</b></span></div>
       <a href="TMO Test Console.dc.html" style="background:#075A36;color:#fff;padding:14px 16px;border-radius:14px;font-weight:700;display:flex;justify-content:space-between">Open Test Console <span>→</span></a>
     </aside>
   </sc-if>
@@ -75,6 +75,7 @@
           <div style="width:72px;aspect-ratio:1200/376;background:#075A36;-webkit-mask:url(assets/logo-mark.png) center/contain no-repeat;mask:url(assets/logo-mark.png) center/contain no-repeat"></div>
           <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:30px;font-weight:800;letter-spacing:-.02em">Welcome back</span><span style="font-size:15px;color:#5C6B60;line-height:1.5">Sign in with your phone number. We’ll text you a code.</span></div>
           <input value="{{ a.phone }}" onInput="{{ on.phone }}" placeholder="0803 123 4567" inputmode="tel" style="height:52px;border:1.5px solid #E2E7E1;border-radius:14px;padding:0 16px;font-size:16px;font-weight:600;outline:none;color:#17251B">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onClick="{{ fillSender }}" style="border:1.5px solid #E2E7E1;background:#F4F6F3;border-radius:14px;padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:700;color:#5C6B60">Test sender</span><span style="font-size:15px;font-weight:800;color:#17251B">0801 234 5678</span></button><button onClick="{{ fillReceiver }}" style="border:1.5px solid #E2E7E1;background:#F4F6F3;border-radius:14px;padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:700;color:#5C6B60">Test receiver</span><span style="font-size:15px;font-weight:800;color:#17251B">0809 876 5432</span></button></div>
           <span style="font-size:13px;font-weight:700;color:#C8412F">{{ err }}</span>
         </div>
         <div style="padding:12px 24px 30px;display:flex;flex-direction:column;gap:6px"><button onClick="{{ submitSignin }}" style="height:54px;border:0;border-radius:14px;font-weight:800;font-size:16px;cursor:pointer;background:{{ signinCta.bg }};color:{{ signinCta.fg }}">Send code</button><button onClick="{{ go.signup }}" style="height:44px;border:0;background:none;color:#5C6B60;font-weight:600;font-size:14px;cursor:pointer">New to TMO? <b style="color:#075A36">Create account</b></button></div>
@@ -85,7 +86,7 @@
       <div style="flex:1;display:flex;flex-direction:column;min-height:0;background:#fff">
         <div style="padding:6px 16px 0"><button onClick="{{ otpBack }}" style="width:44px;height:44px;border-radius:50%;border:0;background:#F4F6F3;font-size:20px;cursor:pointer">←</button></div>
         <div style="padding:16px 24px;display:flex;flex-direction:column;gap:20px">
-          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:30px;font-weight:800;letter-spacing:-.02em">Enter the code</span><span style="font-size:15px;color:#5C6B60;line-height:1.5">Sent by SMS to <b style="color:#17251B">{{ phoneShown }}</b></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:30px;font-weight:800;letter-spacing:-.02em">Enter the code</span><span style="font-size:15px;color:#5C6B60;line-height:1.5">Your code is <b style="color:#17251B">123456</b> · sent to {{ phoneShown }}</span></div>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px"><sc-for list="{{ otpBoxes }}" as="b" hint-placeholder-count="6"><span style="height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;border:2px solid {{ b.bd }};background:{{ b.bg }}">{{ b.d }}</span></sc-for></div>
           <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600"><button onClick="{{ resend }}" style="border:0;background:none;color:#5C6B60;font-weight:700;font-size:14px;cursor:pointer;padding:0">Resend code</button><button onClick="{{ autofill }}" style="border:0;background:none;color:#075A36;font-weight:800;font-size:14px;cursor:pointer;padding:0">Paste from SMS</button></div>
         </div>
@@ -232,8 +233,16 @@
 
     <sc-if value="{{ is.shipments }}" hint-placeholder-val="{{ false }}">
       <div style="flex:1;overflow-y:auto;padding:8px 20px 20px;display:flex;flex-direction:column;gap:12px">
-        <span style="font-size:28px;font-weight:800;letter-spacing:-.01em">Shipments</span>
-        <sc-if value="{{ noAll }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;color:#5C6B60">No shipments yet.</span></sc-if>
+        <span style="font-size:28px;font-weight:800;letter-spacing:-.01em">Track</span>
+        <div style="background:#fff;border-radius:16px;height:54px;display:flex;align-items:center;gap:10px;padding:0 8px 0 16px;flex:none">
+          <input value="{{ trackInput }}" onInput="{{ on.track }}" placeholder="Any waybill, e.g. TMO-0001" style="flex:1;border:0;outline:none;font-size:16px;font-weight:600;color:#17251B;min-width:0;background:transparent;font-family:'IBM Plex Mono'">
+          <button onClick="{{ doTrack }}" style="height:40px;padding:0 16px;border:0;border-radius:11px;background:#F9D44B;color:#17251B;font-weight:800;font-size:14px;cursor:pointer">Track</button>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:#C8412F">{{ err }}</span>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#E9EDE8;border-radius:14px;padding:4px;flex:none">
+          <sc-for list="{{ tkTabs }}" as="g" hint-placeholder-count="3"><button onClick="{{ g.go }}" style="height:40px;border:0;border-radius:11px;font-weight:800;font-size:14px;cursor:pointer;background:{{ g.bg }};color:{{ g.fg }}">{{ g.l }}</button></sc-for>
+        </div>
+        <sc-if value="{{ noAll }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;color:#5C6B60;line-height:1.5">{{ noAllText }}</span></sc-if>
         <sc-for list="{{ all }}" as="x" hint-placeholder-count="3">
           <button onClick="{{ x.open }}" style="border:0;text-align:left;cursor:pointer;background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
             <div style="display:flex;justify-content:space-between;align-items:center;width:100%"><span style="font-family:'IBM Plex Mono';font-size:13px;font-weight:600;color:#5C6B60">{{ x.code }} · {{ x.dir }}</span><span style="padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ x.bg }};color:{{ x.fg }}">{{ x.status }}</span></div>
@@ -261,7 +270,7 @@
       <div style="flex:none;height:84px;background:#fff;border-top:1px solid #E2E7E1;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 12px 24px">
         <button onClick="{{ go.home }}" style="border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{ tab.home }}"><span style="width:22px;height:22px;border-radius:7px;border:2.5px solid currentColor"></span>Home</button>
         <button onClick="{{ startSend }}" style="border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#5C6B60"><span style="width:36px;height:36px;margin-top:-10px;border-radius:12px;background:#075A36;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center">+</span>Send</button>
-        <button onClick="{{ go.shipments }}" style="border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{ tab.ship }}"><span style="width:22px;height:22px;border-radius:50%;border:2.5px solid currentColor"></span>Shipments</button>
+        <button onClick="{{ go.shipments }}" style="border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{ tab.ship }}"><span style="width:22px;height:22px;border-radius:50%;border:2.5px solid currentColor"></span>Track</button>
         <button onClick="{{ go.account }}" style="border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{ tab.acct }}"><span style="width:22px;height:22px;border-radius:50% 50% 6px 6px;border:2.5px solid currentColor"></span>Account</button>
       </div>
     </sc-if>
@@ -282,8 +291,8 @@
 <script type="text/x-dc" data-dc-script>
 const SCREENS=['splash','onboard','signup','signin','otp','perms','home','route','package','quote','pay','track','rate','shipments','account'];
 class Component extends DCLogic {
-  state={screen:'splash',slide:0,name:'',phone:'',email:'',terms:false,otp:'',otpMode:'signup',sent:'',perm:{loc:true,notif:true},
-    sf:{pickup:0,dest:-1,rName:'',rPhone:'',cat:0,desc:'',band:1,value:'50000',timing:'after',agree:false},sheet:null,cur:null,pay:null,method:'TMO Card',stars:0,tags:[],toast:null,err:'',track:'',ready:false};
+  state={screen:'splash',slide:0,name:'',phone:'08012345678',email:'',terms:false,otp:'',otpMode:'signup',sent:'',perm:{loc:true,notif:true},
+    sf:{pickup:0,dest:-1,rName:'Tola Bello',rPhone:'08098765432',cat:0,desc:'',band:1,value:'50000',timing:'after',agree:false},sheet:null,cur:null,pay:null,method:'TMO Card',stars:0,tags:[],toast:null,err:'',track:'',ready:false};
   componentDidMount(){
     const boot=()=>{const T=window.TMO;if(!T)return setTimeout(boot,40);
       this.lastSms=Date.now();
@@ -315,7 +324,7 @@ class Component extends DCLogic {
     const phoneOk=T.norm(s.phone).length===11;
     const SL=[{photo:true,ph:false,phText:'',title:'Lagos-wide parcels, priced fairly',body:'Every package is weighed and priced by the system. No haggling, no surprises.'},{photo:false,ph:true,phText:'photo · officer weighing a package at a CMS park',title:'Drop off at a park, or we pick up',body:'Walk into any CMS park, or request a doorstep pickup from your shop or home.'},{photo:false,ph:true,phText:'photo · receiver scanning delivery QR with driver',title:'Track it to the door',body:'Waybill, SMS updates and QR-confirmed delivery so nothing goes missing.'}];
     const sendCode=mode=>{const code=T.sendOtp(s.phone,'Rider');this.setState({screen:'otp',otpMode:mode,otp:'',sent:code,err:''});};
-    const press=k=>()=>{if(k==='⌫')return this.setState({otp:s.otp.slice(0,-1)});if(!k)return;const o=(s.otp+k).slice(0,6);this.setState({otp:o});if(o.length===6)setTimeout(()=>this.finishAuth(),300);};
+    const press=k=>()=>{if(k==='⌫')return this.setState({otp:s.otp.slice(0,-1)});if(!k)return;const o=(s.otp+k).slice(0,6);this.setState({otp:o});if(o.length===6){if(o!==T.CODE)return setTimeout(()=>this.setState({otp:''}),300);setTimeout(()=>this.finishAuth(),300);}};
     // send flow
     const f=s.sf,dest=T.DESTS[f.dest];
     const est=T.price(db,{band:f.band,dest:dest?dest.n:T.DESTS[1].n,value:f.value});
@@ -329,15 +338,15 @@ class Component extends DCLogic {
     const payNeeded=mine.filter(x=>T.norm(x.senderPhone)===myPh&&!['Closed','Cancelled'].includes(x.status)&&((x.kg&&T.due(x)>0)||x.payRequest)).map(x=>({code:x.code,amount:T.fmt(T.due(x)),text:x.payRequest&&x.channel!=='online'?(x.officerName||'Officer')+' at '+x.park+' sent a payment request.':'Weighed at '+x.kg+' kg. Pay to release your package.',pay:()=>this.go('pay',{pay:{code:x.code,amount:T.due(x),label:'Amount due'},cur:x.code})}));
     // track
     const sh=T.ship(db,s.cur);let t={};
-    if(sh){const st=T.display(sh),send=T.norm(sh.senderPhone)===myPh,dr=sh.driverId?T.user(db,sh.driverId):null,dn=dr?dr.name.split(' ')[0]:'';
+    if(sh){const st=T.display(sh),send=T.norm(sh.senderPhone)===myPh,recv=T.norm(sh.receiverPhone)===myPh,dr=sh.driverId?T.user(db,sh.driverId):null,dn=dr?dr.name.split(' ')[0]:'';
       const nexts={'Requested':'Finding a driver near '+sh.pickup+'…','Paid':'Estimate paid. Finding a driver…','Assigned':sh.channel==='online'?(sh.arrivedAt?dn+' has arrived at pickup.':dn+' accepted and is heading to pickup.'):dn+' will collect it from '+sh.park+'.',
         'Awaiting payment':'Weighed at '+sh.kg+' kg. '+(send?'Pay '+T.fmt(T.due(sh))+' to release the package.':'Waiting for the sender to pay.'),'Ready for pickup':send?'Paid. Show your waybill QR to '+dn+'.':'Paid — collection in progress.',
         'Accepted':'Received at '+sh.park+'. Waiting for a vehicle.','Created':'Being registered at '+(sh.park||'the park')+'.','In transit':'On the way to '+T.dest(sh.dest).s+' with '+dn+'.',
         'Out for delivery':send?dn+' is at the receiver.':'Your driver is here. Show the delivery QR below.','Delivered':'Delivered '+T.time(sh.deliveredAt||Date.now())+'.'+(send?' Rate to close.':' Confirm to close.'),'Closed':'Complete. Thanks for using TMO.','Cancelled':'This request was cancelled.'};
       const showWb=send&&sh.channel==='online'&&sh.waybillAt&&['Assigned','Paid'].includes(sh.status)&&T.collectable(sh);
-      const showPod=!send&&['Assigned','Accepted','Paid','In transit','Out for delivery'].includes(sh.status)&&!!sh.waybillAt;
+      const showPod=recv&&['Assigned','Accepted','Paid','In transit','Out for delivery'].includes(sh.status)&&!!sh.waybillAt;
       const showWbAny=send&&sh.waybillAt&&!showWb&&!['Delivered','Closed','Cancelled'].includes(sh.status);
-      t={code:sh.code,dir:send?'Sending':'Receiving',status:st,next:nexts[st]||st,heroK:st.toUpperCase(),heroBg:['Delivered','Closed'].includes(st)?'#075A36':['In transit','Out for delivery','Awaiting payment'].includes(st)?'#17251B':'#fff',heroFg:['Delivered','Closed','In transit','Out for delivery','Awaiting payment'].includes(st)?'#fff':'#17251B',
+      t={code:sh.code,dir:send?'Sending':recv?'Receiving':'Tracking',status:st,next:nexts[st]||st,heroK:st.toUpperCase(),heroBg:['Delivered','Closed'].includes(st)?'#075A36':['In transit','Out for delivery','Awaiting payment'].includes(st)?'#17251B':'#fff',heroFg:['Delivered','Closed','In transit','Out for delivery','Awaiting payment'].includes(st)?'#fff':'#17251B',
         canPay:send&&((sh.kg&&T.due(sh)>0)||sh.payRequest)&&!['Cancelled','Closed'].includes(sh.status),dueF:T.fmt(T.due(sh)),pay:()=>this.go('pay',{pay:{code:sh.code,amount:T.due(sh),label:'Amount due'}}),
         qr:showWb||showWbAny?T.qr(T.wbPayload(sh),6):showPod?T.qr(T.podPayload(sh),6):'',qrK:showPod?'YOUR DELIVERY QR':'WAYBILL',qrCode:showPod?sh.podToken:sh.code,qrHelp:showPod?'Show this to the driver at handover. Only share it in person.':showWb?'Show this to '+dn+' at pickup — they scan it to collect.':'Your waybill. Anyone can track with this number.',
         driver:dr?dr.name:'',driverIni:dr?dr.name.split(' ').map(w=>w[0]).join('').slice(0,2):'TM',driverSub:dr?(dr.vehicle||'Vehicle')+' · '+T.fmtPhone(dr.phone):'',plate:dr?dr.plate:'',
@@ -345,7 +354,7 @@ class Component extends DCLogic {
         from:sh.pickup||sh.park,to:T.dest(sh.dest).n+' · '+sh.receiverName,
         money:[{k:'Estimate',v:T.fmt(sh.estPrice)}].concat(sh.kg?[{k:'Final ('+sh.kg+' kg)',v:T.fmt(sh.finalPrice)}]:[]).concat([{k:'Paid',v:T.fmt(sh.paidAmount)}]),
         history:sh.history.slice().reverse().map((h,i)=>({s:h.status,n:(h.by?h.by+(h.note?' · ':''):'')+(h.note||''),t:T.time(h.at),c:i===0?'#F9D44B':'#3DBE72'})),
-        canRate:send&&sh.status==='Delivered',canConfirm:!send&&sh.status==='Delivered',
+        canRate:send&&sh.status==='Delivered',canConfirm:recv&&sh.status==='Delivered',
         confirm:()=>T.update(d=>{const x=T.ship(d,sh.code);T.step(d,x,'Closed',nm,'customer','Receiver confirmed receipt');}),
         canCancel:send&&!sh.driverId&&sh.channel==='online'&&['Created','Paid'].includes(sh.status),
         cancel:()=>T.update(d=>{const x=T.ship(d,sh.code);if(x.paidAmount){const u=T.userByPhone(d,x.senderPhone,'customer');if(u)u.card=(u.card||0)+x.paidAmount;x.payments.push({id:T.uid('p'),amount:-x.paidAmount,method:'Refund to TMO Card',at:Date.now(),by:'System',park:'Online'});x.paidAmount=0;}T.step(d,x,'Cancelled',nm,'customer','Cancelled by sender');})};}
@@ -377,8 +386,9 @@ class Component extends DCLogic {
       me:{name:nm,first:(nm||s.name||'there').split(' ')[0],initials:(nm||'TM').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),phone:me?T.fmtPhone(me.phone):'',card:T.fmt(card)},
       greeting:hr<12?'Good morning':hr<17?'Good afternoon':'Good evening',
       trackInput:s.track,doTrack:()=>{const x=T.ship(db,s.track);if(x)this.go('track',{cur:x.code});else this.setState({err:'No shipment found for “'+s.track+'”.'});},
-      payNeeded,active:active.map(row),noActive:active.length===0,all:mine.map(row),noAll:mine.length===0,
-      startSend:()=>this.go('route',{sf:Object.assign({},s.sf,{dest:-1,rName:'',rPhone:'',desc:'',agree:false})}),
+      payNeeded,active:active.map(row),noActive:active.length===0,...(()=>{const sent=mine.filter(x=>T.norm(x.senderPhone)===myPh),rec=mine.filter(x=>T.norm(x.receiverPhone)===myPh),k=s.tk||'All',L={All:mine,Sent:sent,Received:rec}[k];return {all:L.map(row),noAll:L.length===0,noAllText:k==='Received'?'Nothing addressed to you yet. Sign in as the receiver (0809 876 5432) to see incoming packages.':k==='Sent'?'You haven’t sent anything yet.':'No shipments yet. Enter any waybill above to track it.',tkTabs:[['All',mine],['Sent',sent],['Received',rec]].map(([l,a])=>({l:l+' · '+a.length,go:()=>this.setState({tk:l}),bg:k===l?'#fff':'transparent',fg:k===l?'#075A36':'#5C6B60'}))};})(),
+      fillSender:()=>this.setState({phone:'08012345678',err:''}),fillReceiver:()=>this.setState({phone:'08098765432',err:''}),
+      startSend:()=>this.go('route',{sf:Object.assign({},s.sf,{dest:-1,rName:'Tola Bello',rPhone:'08098765432',desc:'',agree:false})}),
       sf:{pickup:T.PICKUPS[f.pickup],destName:dest?dest.n:'Choose destination',rName:f.rName,rPhone:f.rPhone,desc:f.desc,value:f.value},
       openPickup:()=>this.setState({sheet:'pickup'}),openDest:()=>this.setState({sheet:'dest'}),
       routeCta:{bg:routeOk?'#075A36':'#E2E7E1',fg:routeOk?'#fff':'#8A968D'},toPackage:()=>{if(routeOk)this.go('package');},
@@ -403,7 +413,7 @@ class Component extends DCLogic {
       submitRating:()=>{if(!s.stars||!sh)return;T.update(d=>{const x=T.ship(d,sh.code);x.rating={stars:s.stars,tags:s.tags};T.step(d,x,'Closed',nm,'customer','Rated '+s.stars+'★'+(s.tags.length?' · '+s.tags.join(', '):''));});this.go('track',{stars:0,tags:[]});},
       topUp:()=>T.update(d=>{const u=T.user(d,me.id);u.card=(u.card||0)+5000;T.log(d,u.name,'customer','topped up TMO Card ₦5,000');}),
       inbox:inbox.map(m=>({t:T.time(m.at)+' · '+T.ago(m.at),text:m.text})),noInbox:inbox.length===0,
-      signOut:()=>{T.update(d=>T.log(d,nm,'customer','signed out of TMO Rider'));T.setSession('customer',null);this.go('signin',{phone:'',otp:''});},
+      signOut:()=>{T.update(d=>T.log(d,nm,'customer','signed out of TMO Rider'));T.setSession('customer',null);this.go('signin',{phone:'08012345678',otp:''});},
       showTabs:['home','shipments','account'].includes(sc),tab:{home:sc==='home'?'#075A36':'#8A968D',ship:sc==='shipments'?'#075A36':'#8A968D',acct:sc==='account'?'#075A36':'#8A968D'},
       sheetOpen:!!s.sheet,sheetTitle:s.sheet==='pickup'?'Pickup location':'Delivery destination',sheetItems,closeSheet:()=>this.setState({sheet:null}),stop:e=>e.stopPropagation()
     };
